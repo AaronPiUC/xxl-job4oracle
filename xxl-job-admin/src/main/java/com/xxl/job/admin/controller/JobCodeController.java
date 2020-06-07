@@ -19,6 +19,7 @@ import java.util.List;
 
 /**
  * job code controller
+ * 定时任务Glue相关的控制类
  * @author xuxueli 2015-12-19 16:13:16
  */
 @Controller
@@ -52,23 +53,36 @@ public class JobCodeController {
 		model.addAttribute("jobLogGlues", jobLogGlues);
 		return "jobcode/jobcode.index";
 	}
-	
+
+
+	/**
+	 * 保存定时任务
+	 *
+	 * @param model 模型
+	 * @param id 主键id
+	 * @param glueSource 源代码
+	 * @param glueRemark 备注
+	 * @return
+	 */
 	@RequestMapping("/save")
 	@ResponseBody
 	public ReturnT<String> save(Model model, int id, String glueSource, String glueRemark) {
-		// valid
+		// 校验
+		// glue的备注不可为空
 		if (glueRemark==null) {
 			return new ReturnT<String>(500, (I18nUtil.getString("system_please_input") + I18nUtil.getString("jobinfo_glue_remark")) );
 		}
+		// glue的长度应该在4-100之间
 		if (glueRemark.length()<4 || glueRemark.length()>100) {
 			return new ReturnT<String>(500, I18nUtil.getString("jobinfo_glue_remark_limit"));
 		}
+		// 检查定时任务信息是否存在了
 		XxlJobInfo exists_jobInfo = xxlJobInfoDao.loadById(id);
 		if (exists_jobInfo == null) {
 			return new ReturnT<String>(500, I18nUtil.getString("jobinfo_glue_jobid_unvalid"));
 		}
 		
-		// update new code
+		// 对xxl_job_info中的job信息进行更新
 		exists_jobInfo.setGlueSource(glueSource);
 		exists_jobInfo.setGlueRemark(glueRemark);
 		exists_jobInfo.setGlueUpdatetime(new Date());
@@ -76,18 +90,17 @@ public class JobCodeController {
 		exists_jobInfo.setUpdateTime(new Date());
 		xxlJobInfoDao.update(exists_jobInfo);
 
-		// log old code
+		// 更新后将原记录保存到xxl_job_infoglue
 		XxlJobLogGlue xxlJobLogGlue = new XxlJobLogGlue();
 		xxlJobLogGlue.setJobId(exists_jobInfo.getId());
 		xxlJobLogGlue.setGlueType(exists_jobInfo.getGlueType());
 		xxlJobLogGlue.setGlueSource(glueSource);
 		xxlJobLogGlue.setGlueRemark(glueRemark);
-
 		xxlJobLogGlue.setAddTime(new Date());
 		xxlJobLogGlue.setUpdateTime(new Date());
 		xxlJobLogGlueDao.save(xxlJobLogGlue);
 
-		// remove code backup more than 30
+		// 仅保留最近30条更新记录，其他删除
 		xxlJobLogGlueDao.removeOld(exists_jobInfo.getId(), 30);
 
 		return ReturnT.SUCCESS;

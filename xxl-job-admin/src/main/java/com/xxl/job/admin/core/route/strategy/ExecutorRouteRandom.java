@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
+ * 随机策略：随便找一个地址算了
  * Created by xuxueli on 17/3/10.
  */
 public class ExecutorRouteRandom extends ExecutorRouter {

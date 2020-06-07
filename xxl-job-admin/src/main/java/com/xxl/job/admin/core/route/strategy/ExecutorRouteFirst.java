@@ -10,7 +10,9 @@ import java.util.List;
  * Created by xuxueli on 17/3/10.
  */
 public class ExecutorRouteFirst extends ExecutorRouter {
-
+    /**
+     * 第一个：即执行列表第一个
+     */
     @Override
     public ReturnT<String> route(TriggerParam triggerParam, List<String> addressList){
         return new ReturnT<String>(addressList.get(0));

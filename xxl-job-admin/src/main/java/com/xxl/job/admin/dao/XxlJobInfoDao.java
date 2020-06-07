@@ -33,6 +33,11 @@ public interface XxlJobInfoDao {
 
     int save(@Param("info") XxlJobInfo info);
 
+    /**
+     * 通过id获取job信息
+     * @param id
+     * @return
+     */
     XxlJobInfo loadById(@Param("id") int id);
 
     int update(@Param("xxlJobInfo") XxlJobInfo xxlJobInfo);
@@ -43,6 +48,12 @@ public interface XxlJobInfoDao {
 
     int findAllCount();
 
+    /**
+     * 查询maxNextTime时间范围内、处于运行状态的前pagesize条的任务
+     * @param maxNextTime 最大下次执行时间
+     * @param pagesize 打算查出的条数
+     * @return
+     */
     List<XxlJobInfo> scheduleJobQuery(@Param("maxNextTime") long maxNextTime, @Param("pagesize") int pagesize);
 
     int scheduleUpdate(@Param("xxlJobInfo") XxlJobInfo xxlJobInfo);

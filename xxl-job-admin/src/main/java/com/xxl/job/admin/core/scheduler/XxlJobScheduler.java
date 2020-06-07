@@ -25,21 +25,27 @@ public class XxlJobScheduler  {
         initI18n();
 
         // admin registry monitor run
+        // 注册监控
         JobRegistryMonitorHelper.getInstance().start();
 
         // admin fail-monitor run
+        // 失败任务监控
         JobFailMonitorHelper.getInstance().start();
 
         // admin lose-monitor run
+        // 丢失监控
         JobLosedMonitorHelper.getInstance().start();
 
         // admin trigger pool start
+        // 触发器池
         JobTriggerPoolHelper.toStart();
 
         // admin log report start
+        // 日志报告
         JobLogReportHelper.getInstance().start();
 
         // start-schedule
+        // 定时
         JobScheduleHelper.getInstance().start();
 
         logger.info(">>>>>>>>> init xxl-job admin success.");
@@ -77,21 +83,31 @@ public class XxlJobScheduler  {
     }
 
     // ---------------------- executor-client ----------------------
+    /**
+     * 执行器注册执行仓库
+     */
     private static ConcurrentMap<String, ExecutorBiz> executorBizRepository = new ConcurrentHashMap<String, ExecutorBiz>();
+
+    /**
+     * 获取执行器控制器
+     * @param address
+     * @return
+     * @throws Exception
+     */
     public static ExecutorBiz getExecutorBiz(String address) throws Exception {
-        // valid
+        // 先验证。传入地址是否为空
         if (address==null || address.trim().length()==0) {
             return null;
         }
 
-        // load-cache
+        // 从缓存中查询，就是那个线程安全存在本地的executorBizRepository
         address = address.trim();
         ExecutorBiz executorBiz = executorBizRepository.get(address);
         if (executorBiz != null) {
             return executorBiz;
         }
 
-        // set-cache
+        // 缓存中没有就新建，然后缓存到Repository中
         executorBiz = new ExecutorBizClient(address, XxlJobAdminConfig.getAdminConfig().getAccessToken());
 
         executorBizRepository.put(address, executorBiz);

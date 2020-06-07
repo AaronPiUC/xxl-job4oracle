@@ -12,6 +12,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
+ * 一致性hash策略
+ *
  * 分组下机器地址相同，不同JOB均匀散列在不同机器上，保证分组下机器分配JOB平均；且每个JOB固定调度其中一台机器；
  *      a、virtual node：解决不均衡问题
  *      b、hash method replace hashCode：String的hashCode可能重复，需要进一步扩大hashCode的取值范围
@@ -31,10 +33,12 @@ public class ExecutorRouteConsistentHash extends ExecutorRouter {
         // md5 byte
         MessageDigest md5;
         try {
+            // 获取指定摘要算法（此处为MD5）的MessageDigest对象
             md5 = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("MD5 not supported", e);
         }
+        // 先重置一下确保处于可使用状态
         md5.reset();
         byte[] keyBytes = null;
         try {
@@ -42,7 +46,7 @@ public class ExecutorRouteConsistentHash extends ExecutorRouter {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("Unknown string :" + key, e);
         }
-
+        // 使用指定的byte数组更新摘要
         md5.update(keyBytes);
         byte[] digest = md5.digest();
 
@@ -56,6 +60,12 @@ public class ExecutorRouteConsistentHash extends ExecutorRouter {
         return truncateHashCode;
     }
 
+    /**
+     * 对job进行hash，分配地址
+     * @param jobId
+     * @param addressList
+     * @return
+     */
     public String hashJob(int jobId, List<String> addressList) {
 
         // ------A1------A2-------A3------

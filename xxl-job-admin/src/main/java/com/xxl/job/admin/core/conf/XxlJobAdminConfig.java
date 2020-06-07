@@ -15,6 +15,7 @@ import java.util.Arrays;
 
 /**
  * xxl-job config
+ * InitializingBean中包含afterPropertiesSet方法用于初始化，且早于init-bean方法。
  *
  * @author xuxueli 2017-04-28
  */

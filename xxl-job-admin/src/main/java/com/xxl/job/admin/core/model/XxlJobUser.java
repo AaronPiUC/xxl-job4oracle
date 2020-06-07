@@ -53,7 +53,11 @@ public class XxlJobUser {
 		this.permission = permission;
 	}
 
-	// plugin
+	/**
+	 * 通过用户具有的权限，判断是否具有某个定时任务分组的权限
+	 * @param jobGroup 定时任务分组
+	 * @return
+	 */
 	public boolean validPermission(int jobGroup){
 		if (this.role == 1) {
 			return true;

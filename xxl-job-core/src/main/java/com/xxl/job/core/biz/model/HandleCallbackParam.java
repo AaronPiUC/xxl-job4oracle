@@ -8,9 +8,15 @@ import java.io.Serializable;
 public class HandleCallbackParam implements Serializable {
     private static final long serialVersionUID = 42L;
 
+    /**
+     * 日志id
+     */
     private long logId;
     private long logDateTim;
 
+    /**
+     * 执行结果
+     */
     private ReturnT<String> executeResult;
 
     public HandleCallbackParam(){}

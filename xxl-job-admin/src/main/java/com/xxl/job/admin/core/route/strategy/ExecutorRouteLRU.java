@@ -42,13 +42,13 @@ public class ExecutorRouteLRU extends ExecutorRouter {
             jobLRUMap.putIfAbsent(jobId, lruItem);
         }
 
-        // put new
+        // 把新传进来的地址筛选出之前lruItem中没有的，添加进来
         for (String address: addressList) {
             if (!lruItem.containsKey(address)) {
                 lruItem.put(address, address);
             }
         }
-        // remove old
+        // 再把之前已经存在的老的地址进行筛选，把新添加的地址存到待删除的delKeys中，等待从地址map中删除
         List<String> delKeys = new ArrayList<>();
         for (String existKey: lruItem.keySet()) {
             if (!addressList.contains(existKey)) {

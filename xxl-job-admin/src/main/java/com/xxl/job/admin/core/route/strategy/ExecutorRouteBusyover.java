@@ -11,12 +11,14 @@ import com.xxl.job.core.biz.model.TriggerParam;
 import java.util.List;
 
 /**
+ * 忙碌转移策略
  * Created by xuxueli on 17/3/10.
  */
 public class ExecutorRouteBusyover extends ExecutorRouter {
 
     @Override
     public ReturnT<String> route(TriggerParam triggerParam, List<String> addressList) {
+        // 看看所有地址，忙就转移，不忙就开ke
         StringBuffer idleBeatResultSB = new StringBuffer();
         for (String address : addressList) {
             // beat

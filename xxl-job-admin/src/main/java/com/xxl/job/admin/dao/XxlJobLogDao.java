@@ -30,11 +30,21 @@ public interface XxlJobLogDao {
 							 @Param("triggerTimeStart") Date triggerTimeStart,
 							 @Param("triggerTimeEnd") Date triggerTimeEnd,
 							 @Param("logStatus") int logStatus);
-	
+
+	/**
+	 * 通过id查询任务日志
+	 * @param id
+	 * @return
+	 */
 	public XxlJobLog load(@Param("id") long id);
 
 	public long save(XxlJobLog xxlJobLog);
 
+	/**
+	 * 更新触发信息
+	 * @param xxlJobLog
+	 * @return
+	 */
 	public int updateTriggerInfo(XxlJobLog xxlJobLog);
 
 	public int updateHandleInfo(XxlJobLog xxlJobLog);
@@ -51,8 +61,21 @@ public interface XxlJobLogDao {
 									  @Param("pagesize") int pagesize);
 	public int clearLog(@Param("logIds") List<Long> logIds);
 
+	/**
+	 * 查找失败任务ID.
+	 * 条件为:NOT ((trigger_code in (0, 200) and handle_code = 0) OR (handle_code = 200))
+	 * @param pagesize 查询数量多少
+	 * @return
+	 */
 	public List<Long> findFailJobLogIds(@Param("pagesize") int pagesize);
 
+	/**
+	 * 更新警告信息
+	 * @param logId
+	 * @param oldAlarmStatus
+	 * @param newAlarmStatus
+	 * @return
+	 */
 	public int updateAlarmStatus(@Param("logId") long logId,
 								 @Param("oldAlarmStatus") int oldAlarmStatus,
 								 @Param("newAlarmStatus") int newAlarmStatus);

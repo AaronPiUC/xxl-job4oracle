@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
+ * 轮询策略
  * Created by xuxueli on 17/3/10.
  */
 public class ExecutorRouteRound extends ExecutorRouter {
@@ -17,7 +18,7 @@ public class ExecutorRouteRound extends ExecutorRouter {
     private static ConcurrentMap<Integer, Integer> routeCountEachJob = new ConcurrentHashMap<Integer, Integer>();
     private static long CACHE_VALID_TIME = 0;
     private static int count(int jobId) {
-        // cache clear
+        // 清理缓存与过期时间，过期时间重置为当前时间+1天的期限
         if (System.currentTimeMillis() > CACHE_VALID_TIME) {
             routeCountEachJob.clear();
             CACHE_VALID_TIME = System.currentTimeMillis() + 1000*60*60*24;
@@ -29,7 +30,9 @@ public class ExecutorRouteRound extends ExecutorRouter {
         routeCountEachJob.put(jobId, count);
         return count;
     }
-
+    /**
+     * 轮询
+     */
     @Override
     public ReturnT<String> route(TriggerParam triggerParam, List<String> addressList) {
         String address = addressList.get(count(triggerParam.getJobId())%addressList.size());

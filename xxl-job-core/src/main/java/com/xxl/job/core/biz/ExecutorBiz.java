@@ -3,6 +3,8 @@ package com.xxl.job.core.biz;
 import com.xxl.job.core.biz.model.*;
 
 /**
+ * 任务执行接口
+ *
  * Created by xuxueli on 17/3/1.
  */
 public interface ExecutorBiz {
@@ -14,7 +16,7 @@ public interface ExecutorBiz {
     public ReturnT<String> beat();
 
     /**
-     * idle beat
+     * idle beat 空闲心跳
      *
      * @param idleBeatParam
      * @return

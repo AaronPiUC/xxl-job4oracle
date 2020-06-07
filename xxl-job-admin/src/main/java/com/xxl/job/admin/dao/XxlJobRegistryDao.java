@@ -18,6 +18,12 @@ public interface XxlJobRegistryDao {
 
     public int removeDead(@Param("ids") List<Integer> ids);
 
+    /**
+     * 查找未过期的活job
+     * @param timeout
+     * @param nowTime
+     * @return
+     */
     public List<XxlJobRegistry> findAll(@Param("timeout") int timeout,
                                         @Param("nowTime") Date nowTime);
 

@@ -56,9 +56,14 @@ public class XxlJobServiceImpl implements XxlJobService {
 		return maps;
 	}
 
+	/**
+	 * 添加定时任务信息
+	 * @param jobInfo 定时任务信息
+	 * @return
+	 */
 	@Override
 	public ReturnT<String> add(XxlJobInfo jobInfo) {
-		// valid
+		// 校验各个参数
 		XxlJobGroup group = xxlJobGroupDao.load(jobInfo.getJobGroup());
 		if (group == null) {
 			return new ReturnT<String>(ReturnT.FAIL_CODE, (I18nUtil.getString("system_please_choose")+I18nUtil.getString("jobinfo_field_jobgroup")) );
@@ -85,28 +90,31 @@ public class XxlJobServiceImpl implements XxlJobService {
 			return new ReturnT<String>(ReturnT.FAIL_CODE, (I18nUtil.getString("system_please_input")+"JobHandler") );
 		}
 
-		// fix "\r" in shell
+		// 对shell脚本中的\r(回车符)进行替换
 		if (GlueTypeEnum.GLUE_SHELL==GlueTypeEnum.match(jobInfo.getGlueType()) && jobInfo.getGlueSource()!=null) {
 			jobInfo.setGlueSource(jobInfo.getGlueSource().replaceAll("\r", ""));
 		}
 
-		// ChildJobId valid
+		// 验证子任务：如果存在子任务就继续校验子任务
         if (jobInfo.getChildJobId()!=null && jobInfo.getChildJobId().trim().length()>0) {
+        	// 分割子任务id串
 			String[] childJobIds = jobInfo.getChildJobId().split(",");
 			for (String childJobIdItem: childJobIds) {
 				if (childJobIdItem!=null && childJobIdItem.trim().length()>0 && isNumeric(childJobIdItem)) {
+					// 格式校验通过，继续验证数据库中是否存在此任务
 					XxlJobInfo childJobInfo = xxlJobInfoDao.loadById(Integer.parseInt(childJobIdItem));
 					if (childJobInfo==null) {
 						return new ReturnT<String>(ReturnT.FAIL_CODE,
 								MessageFormat.format((I18nUtil.getString("jobinfo_field_childJobId")+"({0})"+I18nUtil.getString("system_not_found")), childJobIdItem));
 					}
 				} else {
+					// 子任务id校验有问题就抛异常
 					return new ReturnT<String>(ReturnT.FAIL_CODE,
 							MessageFormat.format((I18nUtil.getString("jobinfo_field_childJobId")+"({0})"+I18nUtil.getString("system_unvalid")), childJobIdItem));
 				}
 			}
 
-			// join , avoid "xxx,,"
+			// 重新拼接一下子任务串
 			String temp = "";
 			for (String item:childJobIds) {
 				temp += item + ",";
@@ -116,7 +124,7 @@ public class XxlJobServiceImpl implements XxlJobService {
 			jobInfo.setChildJobId(temp);
 		}
 
-		// add in db
+		// 保存定时任务进数据库，并通过返回的自增id判断是否添加成功
 		jobInfo.setAddTime(new Date());
 		jobInfo.setUpdateTime(new Date());
 		jobInfo.setGlueUpdatetime(new Date());
@@ -128,6 +136,11 @@ public class XxlJobServiceImpl implements XxlJobService {
 		return new ReturnT<String>(String.valueOf(jobInfo.getId()));
 	}
 
+	/**
+	 * 验证是否是数字
+	 * @param str 字符
+	 * @return
+	 */
 	private boolean isNumeric(String str){
 		try {
 			int result = Integer.valueOf(str);
@@ -137,6 +150,11 @@ public class XxlJobServiceImpl implements XxlJobService {
 		}
 	}
 
+	/**
+	 * 更新定时任务信息
+	 * @param jobInfo 信息
+	 * @return
+	 */
 	@Override
 	public ReturnT<String> update(XxlJobInfo jobInfo) {
 
@@ -195,8 +213,9 @@ public class XxlJobServiceImpl implements XxlJobService {
 			return new ReturnT<String>(ReturnT.FAIL_CODE, (I18nUtil.getString("jobinfo_field_id")+I18nUtil.getString("system_not_found")) );
 		}
 
-		// next trigger time (5s后生效，避开预读周期)
+		// 下次触发时间 (5s后生效，避开预读周期)
 		long nextTriggerTime = exists_jobInfo.getTriggerNextTime();
+		//如果当前处于运行状态并且新提交的cron与原有的cron相同，就设置在5秒后执行一次
 		if (exists_jobInfo.getTriggerStatus() == 1 && !jobInfo.getJobCron().equals(exists_jobInfo.getJobCron()) ) {
 			try {
 				Date nextValidTime = new CronExpression(jobInfo.getJobCron()).getNextValidTimeAfter(new Date(System.currentTimeMillis() + JobScheduleHelper.PRE_READ_MS));
@@ -231,19 +250,31 @@ public class XxlJobServiceImpl implements XxlJobService {
 		return ReturnT.SUCCESS;
 	}
 
+	/**
+	 * 删除定时任务，直接删除就完事了
+	 * @param id
+	 * @return
+	 */
 	@Override
 	public ReturnT<String> remove(int id) {
 		XxlJobInfo xxlJobInfo = xxlJobInfoDao.loadById(id);
 		if (xxlJobInfo == null) {
 			return ReturnT.SUCCESS;
 		}
-
+		// 多方面删除，同时删除log相关
 		xxlJobInfoDao.delete(id);
 		xxlJobLogDao.delete(id);
 		xxlJobLogGlueDao.deleteByJobId(id);
 		return ReturnT.SUCCESS;
 	}
 
+	/**
+	 * 立即执行某个任务
+	 * 核心思想是更新此任务的下次执行的时间设置成当前时间5秒后
+	 *
+	 * @param id
+	 * @return
+	 */
 	@Override
 	public ReturnT<String> start(int id) {
 		XxlJobInfo xxlJobInfo = xxlJobInfoDao.loadById(id);

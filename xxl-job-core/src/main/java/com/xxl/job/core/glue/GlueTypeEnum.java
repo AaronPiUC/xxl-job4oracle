@@ -1,6 +1,8 @@
 package com.xxl.job.core.glue;
 
 /**
+ * Glue脚本类型枚举类
+ *
  * Created by xuxueli on 17/4/26.
  */
 public enum GlueTypeEnum {
@@ -13,7 +15,13 @@ public enum GlueTypeEnum {
     GLUE_NODEJS("GLUE(Nodejs)", true, "node", ".js"),
     GLUE_POWERSHELL("GLUE(PowerShell)", true, "powershell", ".ps1");
 
+    /**
+     * 描述
+     */
     private String desc;
+    /**
+     * 是否为脚本
+     */
     private boolean isScript;
     private String cmd;
     private String suffix;

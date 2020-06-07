@@ -29,6 +29,7 @@ public interface XxlJobService {
 
 	/**
 	 * add job
+	 * 添加定时任务
 	 *
 	 * @param jobInfo
 	 * @return

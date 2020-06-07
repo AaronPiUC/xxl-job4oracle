@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
+ * 具体任务相关的操作Api
+ *
  * Created by xuxueli on 17/5/10.
  */
 @Controller
@@ -47,6 +49,8 @@ public class JobApiController {
         if (uri==null || uri.trim().length()==0) {
             return new ReturnT<String>(ReturnT.FAIL_CODE, "invalid request, uri-mapping empty.");
         }
+
+        // 验证是否与注册中心有一致的accessToken，有这个配置就要验证是否一致，没有这个配置就默认不开启验证
         if (XxlJobAdminConfig.getAdminConfig().getAccessToken()!=null
                 && XxlJobAdminConfig.getAdminConfig().getAccessToken().trim().length()>0
                 && !XxlJobAdminConfig.getAdminConfig().getAccessToken().equals(request.getHeader(XxlJobRemotingUtil.XXL_JOB_ACCESS_TOKEN))) {
@@ -55,12 +59,15 @@ public class JobApiController {
 
         // services mapping
         if ("callback".equals(uri)) {
+            //回调
             List<HandleCallbackParam> callbackParamList = GsonTool.fromJson(data, List.class, HandleCallbackParam.class);
             return adminBiz.callback(callbackParamList);
         } else if ("registry".equals(uri)) {
+            //注册任务
             RegistryParam registryParam = GsonTool.fromJson(data, RegistryParam.class);
             return adminBiz.registry(registryParam);
         } else if ("registryRemove".equals(uri)) {
+            //移除服务
             RegistryParam registryParam = GsonTool.fromJson(data, RegistryParam.class);
             return adminBiz.registryRemove(registryParam);
         } else {

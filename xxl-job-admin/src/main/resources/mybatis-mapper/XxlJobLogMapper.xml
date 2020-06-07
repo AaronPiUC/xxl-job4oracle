@@ -234,16 +234,17 @@
     </delete>
 
     <select id="findFailJobLogIds" resultType="long">
-        SELECT id
-        FROM xxl_job_log
-        WHERE NOT (
-                (trigger_code in (0, 200) and handle_code = 0)
-                        OR
-                (handle_code = 200)
-                )
-          AND alarm_status = 0
-          and ROWNUM <![CDATA[<= ]]> 1
-        ORDER BY id
+        select t.id
+        from (SELECT id, ROWNUM as num
+              FROM xxl_job_log
+              WHERE NOT (
+                      (trigger_code in (0, 200) and handle_code = 0)
+                              OR
+                      (handle_code = 200)
+                      )
+                AND alarm_status = 0
+              ORDER BY id) t
+        where t.num <![CDATA[<= ]]> #{pagesize}
         <!--LIMIT #{pagesize}-->
     </select>
 

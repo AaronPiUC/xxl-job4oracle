@@ -21,7 +21,7 @@
     <select id="findDead" parameterType="java.util.HashMap" resultType="java.lang.Integer">
         SELECT t.id
         FROM xxl_job_registry t
-        WHERE abs((trunc(#{nowTime,jdbcType=TIMESTAMP} - 0, 'mi') - trunc((t.update_time - 0), 'mi'))) * 24 * 60 * 60 <![CDATA[ < ]]> #{timeout,jdbcType=INTEGER}
+        WHERE abs((trunc(#{nowTime,jdbcType=TIMESTAMP} - 0, 'mi') - trunc((t.update_time - 0), 'mi'))) * 24 * 60 * 60 <![CDATA[ > ]]> #{timeout,jdbcType=INTEGER}
     </select>
 
     <delete id="removeDead" parameterType="java.lang.Integer">

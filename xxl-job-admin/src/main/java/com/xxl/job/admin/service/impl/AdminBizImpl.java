@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 管理端Biz
  * @author xuxueli 2017-07-27 21:54:20
  */
 @Service
@@ -41,8 +42,14 @@ public class AdminBizImpl implements AdminBiz {
     private XxlJobGroupDao xxlJobGroupDao;
 
 
+    /**
+     * 定时任务回调
+     * @param callbackParamList
+     * @return
+     */
     @Override
     public ReturnT<String> callback(List<HandleCallbackParam> callbackParamList) {
+        //对每一个参数进行回调
         for (HandleCallbackParam handleCallbackParam: callbackParamList) {
             ReturnT<String> callbackResult = callback(handleCallbackParam);
             logger.debug(">>>>>>>>> JobApiController.callback {}, handleCallbackParam={}, callbackResult={}",
@@ -52,6 +59,11 @@ public class AdminBizImpl implements AdminBiz {
         return ReturnT.SUCCESS;
     }
 
+    /**
+     * 单个参数的回调
+     * @param handleCallbackParam
+     * @return
+     */
     private ReturnT<String> callback(HandleCallbackParam handleCallbackParam) {
         // valid log item
         XxlJobLog log = xxlJobLogDao.load(handleCallbackParam.getLogId());
@@ -64,20 +76,26 @@ public class AdminBizImpl implements AdminBiz {
 
         // trigger success, to trigger child job
         String callbackMsg = null;
+
         if (IJobHandler.SUCCESS.getCode() == handleCallbackParam.getExecuteResult().getCode()) {
+            //任务执行成功
+            //获取job信息
             XxlJobInfo xxlJobInfo = xxlJobInfoDao.loadById(log.getJobId());
+            //判断有无子任务
             if (xxlJobInfo!=null && xxlJobInfo.getChildJobId()!=null && xxlJobInfo.getChildJobId().trim().length()>0) {
                 callbackMsg = "<br><br><span style=\"color:#00c0ef;\" > >>>>>>>>>>>"+ I18nUtil.getString("jobconf_trigger_child_run") +"<<<<<<<<<<< </span><br>";
 
                 String[] childJobIds = xxlJobInfo.getChildJobId().split(",");
                 for (int i = 0; i < childJobIds.length; i++) {
+                    //转换子任务Id为数字
                     int childJobId = (childJobIds[i]!=null && childJobIds[i].trim().length()>0 && isNumeric(childJobIds[i]))?Integer.valueOf(childJobIds[i]):-1;
                     if (childJobId > 0) {
-
+                        //存在子任务
+                        //添加触发器
                         JobTriggerPoolHelper.trigger(childJobId, TriggerTypeEnum.PARENT, -1, null, null, null);
                         ReturnT<String> triggerChildResult = ReturnT.SUCCESS;
 
-                        // add msg
+                        // 增加回调信息
                         callbackMsg += MessageFormat.format(I18nUtil.getString("jobconf_callback_child_msg1"),
                                 (i+1),
                                 childJobIds.length,
@@ -85,6 +103,7 @@ public class AdminBizImpl implements AdminBiz {
                                 (triggerChildResult.getCode()==ReturnT.SUCCESS_CODE?I18nUtil.getString("system_success"):I18nUtil.getString("system_fail")),
                                 triggerChildResult.getMsg());
                     } else {
+                        //不存在子任务
                         callbackMsg += MessageFormat.format(I18nUtil.getString("jobconf_callback_child_msg2"),
                                 (i+1),
                                 childJobIds.length,
@@ -95,7 +114,7 @@ public class AdminBizImpl implements AdminBiz {
             }
         }
 
-        // handle msg
+        // 处理信息
         StringBuffer handleMsg = new StringBuffer();
         if (log.getHandleMsg()!=null) {
             handleMsg.append(log.getHandleMsg()).append("<br>");
@@ -108,10 +127,11 @@ public class AdminBizImpl implements AdminBiz {
         }
 
         if (handleMsg.length() > 15000) {
-            handleMsg = new StringBuffer(handleMsg.substring(0, 15000));  // text最大64kb 避免长度过长
+            // text最大64kb 避免长度过长
+            handleMsg = new StringBuffer(handleMsg.substring(0, 15000));
         }
 
-        // success, save log
+        //执行完毕，存下执行信息
         log.setHandleTime(new Date());
         log.setHandleCode(handleCallbackParam.getExecuteResult().getCode());
         log.setHandleMsg(handleMsg.toString());
@@ -120,6 +140,10 @@ public class AdminBizImpl implements AdminBiz {
         return ReturnT.SUCCESS;
     }
 
+    /**
+     * @param str 判断是否是数字
+     * @return
+     */
     private boolean isNumeric(String str){
         try {
             int result = Integer.valueOf(str);
