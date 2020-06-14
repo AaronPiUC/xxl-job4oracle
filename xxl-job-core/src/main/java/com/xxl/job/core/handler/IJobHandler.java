@@ -11,7 +11,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 public abstract class IJobHandler {
 
-
+	// 固定格式的执行结果
 	/** success */
 	public static final ReturnT<String> SUCCESS = new ReturnT<String>(200, null);
 	/** fail */

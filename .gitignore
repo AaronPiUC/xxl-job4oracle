@@ -8,3 +8,8 @@ target/
 .DS_Store
 .gitattributes
 *.pptx
+xxl-job-executor-samples/xxl-job-executor-sample-springboot/src/main/java/com/xxl/job/executor/structure/CatDogQueue.java
+xxl-job-executor-samples/xxl-job-executor-sample-springboot/src/main/java/com/xxl/job/executor/structure/MaxInWindow.java
+xxl-job-executor-samples/xxl-job-executor-sample-springboot/src/main/java/com/xxl/job/executor/structure/ReverseByStack.java
+xxl-job-executor-samples/xxl-job-executor-sample-springboot/src/main/java/com/xxl/job/executor/structure/ReverseStackByRecursion.java
+xxl-job-executor-samples/xxl-job-executor-sample-springboot/src/main/java/com/xxl/job/executor/structure/TwoStackQueue.java

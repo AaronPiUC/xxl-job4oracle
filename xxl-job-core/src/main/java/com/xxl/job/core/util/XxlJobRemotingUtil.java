@@ -52,7 +52,7 @@ public class XxlJobRemotingUtil {
 
 
     /**
-     * post
+     * post请求远端服务器
      *
      * @param url
      * @param accessToken

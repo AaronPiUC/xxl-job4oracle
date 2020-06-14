@@ -10,7 +10,7 @@ import com.xxl.job.core.biz.model.*;
 public interface ExecutorBiz {
 
     /**
-     * beat
+     * beat 心跳反馈
      * @return
      */
     public ReturnT<String> beat();
@@ -24,14 +24,14 @@ public interface ExecutorBiz {
     public ReturnT<String> idleBeat(IdleBeatParam idleBeatParam);
 
     /**
-     * run
+     * run 执行任务
      * @param triggerParam
      * @return
      */
     public ReturnT<String> run(TriggerParam triggerParam);
 
     /**
-     * kill
+     * kill 终止任务
      * @param killParam
      * @return
      */

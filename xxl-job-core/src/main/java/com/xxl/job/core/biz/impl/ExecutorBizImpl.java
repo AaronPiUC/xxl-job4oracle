@@ -17,16 +17,27 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
+ * 执行器Biz实现类
  * Created by xuxueli on 17/3/1.
  */
 public class ExecutorBizImpl implements ExecutorBiz {
     private static Logger logger = LoggerFactory.getLogger(ExecutorBizImpl.class);
 
+
+    /**
+     * 心跳监测，类似于ping的作用，直接返回一个beat成功就好
+     * @return
+     */
     @Override
     public ReturnT<String> beat() {
         return ReturnT.SUCCESS;
     }
 
+    /**
+     * 空闲心跳
+     * @param idleBeatParam 空闲心跳参数：jobid
+     * @return
+     */
     @Override
     public ReturnT<String> idleBeat(IdleBeatParam idleBeatParam) {
 

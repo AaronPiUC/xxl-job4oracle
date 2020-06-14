@@ -20,46 +20,39 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
+ * 任务执行器
  * Created by xuxueli on 2016/3/2 21:14.
  */
 public class XxlJobExecutor  {
     private static final Logger logger = LoggerFactory.getLogger(XxlJobExecutor.class);
 
     // ---------------------- param ----------------------
+    /**
+     * admin地址
+     */
     private String adminAddresses;
+    /**
+     * 认证token
+     */
     private String accessToken;
+    /**
+     * app名称
+     */
     private String appname;
     private String address;
     private String ip;
+    /**
+     * 端口
+     */
     private int port;
+    /**
+     * 日志路径
+     */
     private String logPath;
+    /**
+     * 日志保留期限
+     */
     private int logRetentionDays;
-
-    public void setAdminAddresses(String adminAddresses) {
-        this.adminAddresses = adminAddresses;
-    }
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-    public void setAppname(String appname) {
-        this.appname = appname;
-    }
-    public void setAddress(String address) {
-        this.address = address;
-    }
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-    public void setPort(int port) {
-        this.port = port;
-    }
-    public void setLogPath(String logPath) {
-        this.logPath = logPath;
-    }
-    public void setLogRetentionDays(int logRetentionDays) {
-        this.logRetentionDays = logRetentionDays;
-    }
-
 
     // ---------------------- start + stop ----------------------
     public void start() throws Exception {
@@ -198,9 +191,43 @@ public class XxlJobExecutor  {
         }
         return null;
     }
+
+
+    /**
+     * 通过任务id获取执行线程
+     * @param jobId 任务id
+     * @return
+     */
     public static JobThread loadJobThread(int jobId){
         JobThread jobThread = jobThreadRepository.get(jobId);
         return jobThread;
+    }
+
+
+
+    public void setAdminAddresses(String adminAddresses) {
+        this.adminAddresses = adminAddresses;
+    }
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+    public void setAppname(String appname) {
+        this.appname = appname;
+    }
+    public void setAddress(String address) {
+        this.address = address;
+    }
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+    public void setPort(int port) {
+        this.port = port;
+    }
+    public void setLogPath(String logPath) {
+        this.logPath = logPath;
+    }
+    public void setLogRetentionDays(int logRetentionDays) {
+        this.logRetentionDays = logRetentionDays;
     }
 
 }

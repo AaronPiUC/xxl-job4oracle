@@ -6,6 +6,12 @@ package com.xxl.job.core.util;
  */
 public class ShardingUtil {
 
+
+    /**
+     * 用于盛放绑定的数据给子线程
+     * todo InheritableThreadLocal:方便值能给子线程使用。
+     * https://www.jianshu.com/p/94ba4a918ff5
+     */
     private static InheritableThreadLocal<ShardingVO> contextHolder = new InheritableThreadLocal<ShardingVO>();
 
     public static class ShardingVO {
